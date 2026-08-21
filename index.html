@@ -1,1 +1,473 @@
 
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hướng Dẫn Sử Dụng — Kinx Auto</title>
+<meta name="description" content="Hướng dẫn sử dụng toàn diện Kinx Auto: tạo ảnh, video từ ảnh, nhân vật đồng nhất, video flow, comic và nhiều hơn nữa." />
+<script src="https://cdn.tailwindcss.com?plugins=typography,line-clamp"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+      colors: {
+        dark: { 900: '#0a0a12', 800: '#111122', 700: '#1a1a2e' },
+        brand: { 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb' },
+        violet2: { 400: '#a78bfa', 500: '#8b5cf6', 600: '#7c3aed' },
+      },
+      keyframes: {
+        'float': { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
+        'pulse-glow': { '0%,100%': { opacity: '.4' }, '50%': { opacity: '.9' } },
+        'gradient-x': { '0%,100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
+        'fade-up': { '0%': { opacity: '0', transform: 'translateY(24px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+        'fade-in': { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+        'slide-left': { '0%': { opacity: '0', transform: 'translateX(40px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+        'spin-slow': { '0%': { transform: 'rotate(0)' }, '100%': { transform: 'rotate(360deg)' } },
+      },
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
+        'gradient-x': 'gradient-x 8s ease infinite',
+        'fade-up': 'fade-up .7s ease-out both',
+        'fade-in': 'fade-in 1s ease-out both',
+        'slide-left': 'slide-left .7s ease-out both',
+        'spin-slow': 'spin-slow 12s linear infinite',
+      },
+    },
+  },
+};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  [data-reveal] { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+  [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+  [data-reveal="left"] { transform: translateX(-32px); }
+  [data-reveal="left"].revealed { transform: translateX(0); }
+  [data-reveal="right"] { transform: translateX(32px); }
+  [data-reveal="right"].revealed { transform: translateX(0); }
+  ::-webkit-scrollbar { width: 9px; }
+  ::-webkit-scrollbar-track { background: #0a0a12; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#2563eb,#7c3aed); border-radius: 8px; }
+  .glass { background: rgba(255,255,255,.04); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,.09); }
+  .text-gradient { background: linear-gradient(90deg,#60a5fa,#a78bfa,#60a5fa); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: gradient-x 6s ease infinite; }
+  .card-glow:hover { box-shadow: 0 0 0 1px rgba(139,92,246,.35), 0 20px 60px -15px rgba(99,102,241,.4); transform: translateY(-4px); }
+  .step-line::before { content: ''; position: absolute; left: 19px; top: 44px; bottom: -20px; width: 2px; background: linear-gradient(180deg,#2563eb,#7c3aed); border-radius: 2px; }
+  .step-line:last-child::before { display: none; }
+  .active-nav { background: linear-gradient(90deg,rgba(37,99,235,.25),rgba(124,58,237,.25)); color: #fff; border-left: 3px solid #8b5cf6; }
+  html { scrollbar-width: thin; scrollbar-color: #7c3aed #0a0a12; }
+</style>
+</head>
+
+<body class="bg-[#0a0a12] text-slate-200 font-sans antialiased overflow-x-hidden selection:bg-violet-600/40">
+
+<!-- ====== ANIMATED BACKGROUND ====== -->
+<div class="fixed inset-0 -z-10 pointer-events-none">
+  <div class="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-blue-600/20 blur-[120px] animate-pulse-glow"></div>
+  <div class="absolute top-1/3 -right-40 w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px] animate-pulse-glow" style="animation-delay:1.5s"></div>
+  <div class="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full bg-indigo-500/15 blur-[100px] animate-pulse-glow" style="animation-delay:3s"></div>
+  <div class="absolute inset-0 opacity-[.05]" style="background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 0);background-size:42px 42px;"></div>
+</div>
+
+<!-- ====== PROGRESS BAR ====== -->
+<div id="progress" class="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-600 z-50 w-0 transition-all duration-150"></div>
+
+
+
+<!-- ====== HERO ====== -->
+<section id="bat-dau" class="relative min-h-screen flex items-center justify-center px-6 pt-20">
+  <div class="max-w-4xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass text-sm text-blue-300 mb-8 animate-fade-up">
+      <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+      </span>
+      Hướng dẫn chính thức v1.0
+    </div>
+    <h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tight mb-6 animate-fade-up" style="animation-delay:.1s">
+      Làm chủ <span class="text-gradient">Kinx Auto</span><br class="hidden md:block" /> trong vài phút
+    </h1>
+    <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 animate-fade-up" style="animation-delay:.2s">
+      Tự động hóa toàn bộ quy trình sáng tạo — từ ảnh nhân vật, video đồng nhất, đến video flow hoàn chỉnh. Tất cả trong một ứng dụng.
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-4 animate-fade-up" style="animation-delay:.3s">
+      <a href="#huong-dan" class="px-8 py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-xl shadow-blue-600/30 hover:shadow-purple-600/50 hover:scale-105 active:scale-95 transition-all">
+        Bắt đầu ngay →
+      </a>
+      <a href="#tinh-nang" class="px-8 py-4 rounded-2xl font-semibold glass hover:bg-white/10 transition-all">
+        Xem tính năng
+      </a>
+    </div>
+  </div>
+ 
+</section>
+
+<!-- ====== STATS ====== -->
+<section class="px-6 pb-20">
+  <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4" data-reveal>
+    <div class="glass rounded-2xl p-6 text-center card-glow transition-all">
+      <div class="text-3xl font-black text-gradient mb-1">8+</div>
+      <div class="text-xs text-slate-400 uppercase tracking-wider">Tính năng chính</div>
+    </div>
+    <div class="glass rounded-2xl p-6 text-center card-glow transition-all">
+      <div class="text-3xl font-black text-gradient mb-1">100%</div>
+      <div class="text-xs text-slate-400 uppercase tracking-wider">Tự động hóa</div>
+    </div>
+    <div class="glass rounded-2xl p-6 text-center card-glow transition-all">
+      <div class="text-3xl font-black text-gradient mb-1">1-Click</div>
+      <div class="text-xs text-slate-400 uppercase tracking-wider">Chạy tất cả</div>
+    </div>
+    <div class="glass rounded-2xl p-6 text-center card-glow transition-all">
+      <div class="text-3xl font-black text-gradient mb-1">24/7</div>
+      <div class="text-xs text-slate-400 uppercase tracking-wider">Hoạt động liên tục</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== PROMPT MẪU (data từ prompts) ====== -->
+<section id="prompt-mau" class="px-6 py-20">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-14" data-reveal>
+      <span class="text-xs font-bold uppercase tracking-widest text-cyan-400">Prompt mẫu</span>
+      <h2 class="text-4xl md:text-5xl font-black mt-3">Thử ngay với prompts</h2>
+      <p class="text-slate-400 mt-4 max-w-xl mx-auto">8 prompt ảnh chất lượng cao được cào từ cộng đồng <a href="https://prompts" target="_blank" class="text-blue-400 hover:text-blue-300 underline decoration-dotted">prompts</a> — bấm sao chép và dán vào tab Tạo Ảnh Pro.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" id="prompt-grid">
+    </div>
+  </div>
+</section>
+
+<!-- ====== FEATURES ====== -->
+<section id="tinh-nang" class="px-6 py-20">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-14" data-reveal>
+      <span class="text-xs font-bold uppercase tracking-widest text-violet-400">Tính năng</span>
+      <h2 class="text-4xl md:text-5xl font-black mt-3">Mọi thứ bạn cần</h2>
+      <p class="text-slate-400 mt-4 max-w-xl mx-auto">Tám module mạnh mẽ, phối hợp nhịp nhàng để tạo nội dung video chuyên nghiệp.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+      <!-- card 1 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">🖼️</div>
+        <h3 class="font-bold text-lg mb-2">Tạo Ảnh Pro</h3>
+        <p class="text-sm text-slate-400">Sinh ảnh hàng loạt từ prompt, chọn layout 2/3/4 cột, xem trước trực tiếp.</p>
+      </div>
+      <!-- card 2 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal style="transition-delay:.05s">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">🎞️</div>
+        <h3 class="font-bold text-lg mb-2">Tạo Từ Ảnh</h3>
+        <p class="text-sm text-slate-400">Chuyển khung ảnh thành video, chạy tiếp tục nhanh, retry tự động.</p>
+      </div>
+      <!-- card 3 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal style="transition-delay:.1s">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">👥</div>
+        <h3 class="font-bold text-lg mb-2">NV Đồng Nhất</h3>
+        <p class="text-sm text-slate-400">Nhân vật ổn định xuyên suốt các video — khuôn mặt không đổi.</p>
+      </div>
+      <!-- card 4 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal style="transition-delay:.15s">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-violet-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">🌀</div>
+        <h3 class="font-bold text-lg mb-2">Tạo Video Flow</h3>
+        <p class="text-sm text-slate-400">Chuỗi video tự động chạy, chỉ định nhân vật cho từng prompt.</p>
+      </div>
+      <!-- card 5 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-rose-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">💬</div>
+        <h3 class="font-bold text-lg mb-2">Comic</h3>
+        <p class="text-sm text-slate-400">Chế độ truyện tranh — tạo toàn bộ khung truyện cùng lúc.</p>
+      </div>
+      <!-- card 6 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal style="transition-delay:.05s">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">📦</div>
+        <h3 class="font-bold text-lg mb-2">Video Sản phẩm</h3>
+        <p class="text-sm text-slate-400">Tạo video quảng cáo sản phẩm tự động, tải về một chạm.</p>
+      </div>
+      <!-- card 7 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal style="transition-delay:.1s">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">✂️</div>
+        <h3 class="font-bold text-lg mb-2">Ghép Video</h3>
+        <p class="text-sm text-slate-400">Merge nhiều video thành một, chọn danh sách, bấm một nút.</p>
+      </div>
+      <!-- card 8 -->
+      <div class="glass rounded-2xl p-6 card-glow transition-all group" data-reveal style="transition-delay:.15s">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-500 to-slate-300 flex items-center justify-center text-xl mb-4 group-hover:scale-110 group-hover:rotate-6 transition-transform">⚙️</div>
+        <h3 class="font-bold text-lg mb-2">Settings + Quản lý</h3>
+        <p class="text-sm text-slate-400">Đổi ngôn ngữ VI/EN, xuất nhập cookie, lịch sử, xóa hàng loạt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== GUIDE STEPS ====== -->
+<section id="huong-dan" class="px-6 py-20">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-[260px_1fr] gap-10">
+    <!-- sidebar -->
+    <aside class="lg:sticky lg:top-24 self-start hidden lg:block" data-reveal="left">
+      <div class="glass rounded-2xl p-4 flex flex-col gap-1 text-sm" id="guide-nav">
+        <a href="#step-1" class="px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors step-link">1 · Tạo Ảnh Pro</a>
+        <a href="#step-2" class="px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors step-link">2 · Tạo Từ Ảnh</a>
+        <a href="#step-3" class="px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors step-link">3 · NV Đồng Nhất</a>
+        <a href="#step-4" class="px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors step-link">4 · Video Flow</a>
+        <a href="#step-5" class="px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors step-link">5 · Comic</a>
+        <a href="#step-6" class="px-4 py-2.5 rounded-lg hover:bg-white/10 transition-colors step-link">6 · Ghép & Xuất</a>
+      </div>
+    </aside>
+
+    <!-- steps -->
+    <div class="space-y-8">
+      <!-- STEP 1 -->
+      <div id="step-1" class="glass rounded-3xl p-8 step-line relative card-glow transition-all" data-reveal="right">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center font-black shrink-0 shadow-lg shadow-blue-600/30">1</div>
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Ảnh</span>
+            <h3 class="text-2xl font-bold mt-1 mb-3">Tạo Ảnh Pro</h3>
+            <ol class="space-y-2 text-slate-300 text-sm">
+              <li class="flex gap-2"><span class="text-blue-400">①</span> Nhập prompt mô tả ảnh vào ô văn bản (mỗi dòng = 1 ảnh).</li>
+              <li class="flex gap-2"><span class="text-blue-400">②</span> Bấm <b>Thêm từ Txt</b> hoặc dán trực tiếp danh sách prompt.</li>
+              <li class="flex gap-2"><span class="text-blue-400">③</span> Chọn layout <b>2 / 3 / 4 cột</b> để xem lưới ảnh.</li>
+              <li class="flex gap-2"><span class="text-blue-400">④</span> Bấm <b>Chạy Tất Cả</b> <span class="px-2 py-0.5 rounded-md text-xs bg-gradient-to-r from-blue-600 to-purple-600">▶</span> — ứng dụng tự sinh từng ảnh.</li>
+              <li class="flex gap-2"><span class="text-blue-400">⑤</span> Theo dõi trạng thái từng ảnh: chờ → xử lý → thành công / lỗi.</li>
+            </ol>
+            <div class="mt-4 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20 text-xs text-violet-300">
+              💡 Mẹo: Những ảnh lỗi có thể <b>Chạy Lại</b> — chỉ những ảnh thất bại được tạo mới, ảnh đã xong được bỏ qua.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div id="step-2" class="glass rounded-3xl p-8 step-line relative card-glow transition-all" data-reveal="right">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center font-black shrink-0 shadow-lg shadow-violet-600/30">2</div>
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-widest text-violet-400">Ảnh → Video</span>
+            <h3 class="text-2xl font-bold mt-1 mb-3">Tạo Từ Ảnh</h3>
+            <ol class="space-y-2 text-slate-300 text-sm">
+              <li class="flex gap-2"><span class="text-violet-400">①</span> Chuẩn bị danh sách khung ảnh (từ Ảnh Pro hoặc tải lên).</li>
+              <li class="flex gap-2"><span class="text-violet-400">②</span> Bấm <b>Run All</b> để chuyển toàn bộ khung thành video.</li>
+              <li class="flex gap-2"><span class="text-violet-400">③</span> Bấm <b>Run Unfinished</b> khi bị gián đoạn — tiếp tục từ chỗ dở.</li>
+              <li class="flex gap-2"><span class="text-violet-400">④</span> Bấm <b>Retry (n)</b> để thử lại các video bị lỗi.</li>
+            </ol>
+            <div class="mt-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300">
+              💡 Nút <b>Dừng</b> chỉ tác động tác vụ hiện tại — các video đã hoàn thành vẫn giữ nguyên.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div id="step-3" class="glass rounded-3xl p-8 step-line relative card-glow transition-all" data-reveal="right">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-400 flex items-center justify-center font-black shrink-0 shadow-lg shadow-indigo-600/30">3</div>
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-widest text-indigo-400">Nhân vật</span>
+            <h3 class="text-2xl font-bold mt-1 mb-3">NV Đồng Nhất</h3>
+            <ol class="space-y-2 text-slate-300 text-sm">
+              <li class="flex gap-2"><span class="text-indigo-400">①</span> Đặt tên nhân vật trong ô <b>Thêm nhân vật</b>.</li>
+              <li class="flex gap-2"><span class="text-indigo-400">②</span> Bấm <b>Xác nhận & Thêm</b> để lưu vào danh sách NV.</li>
+              <li class="flex gap-2"><span class="text-indigo-400">③</span> Công cụ tự chọn ảnh nhân vật phù hợp cho từng prompt.</li>
+              <li class="flex gap-2"><span class="text-indigo-400">④</span> Bấm <b>Tạo Tất Cả</b> để sinh video với khuôn mặt ổn định.</li>
+            </ol>
+            <div class="mt-4 p-3 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-xs text-fuchsia-300">
+              💡 Nút <b>Tự lấy NV</b> tự động gán nhân vật phù hợp nhất cho từng dòng prompt.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div id="step-4" class="glass rounded-3xl p-8 step-line relative card-glow transition-all" data-reveal="right">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-violet-400 flex items-center justify-center font-black shrink-0 shadow-lg shadow-purple-600/30">4</div>
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-widest text-purple-400">Chuỗi</span>
+            <h3 class="text-2xl font-bold mt-1 mb-3">Tạo Video Flow</h3>
+            <ol class="space-y-2 text-slate-300 text-sm">
+              <li class="flex gap-2"><span class="text-purple-400">①</span> Nhập chuỗi prompt — mỗi dòng là một cảnh video.</li>
+              <li class="flex gap-2"><span class="text-purple-400">②</span> Gán nhân vật cho từng cảnh nếu cần.</li>
+              <li class="flex gap-2"><span class="text-purple-400">③</span> Bấm <b>Chạy Tất Cả</b> — các cảnh chạy tuần tự, giữ tính liền mạch.</li>
+              <li class="flex gap-2"><span class="text-purple-400">④</span> Bấm <b>Chạy Lại</b> để thử lại các cảnh thất bại.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div id="step-5" class="glass rounded-3xl p-8 step-line relative card-glow transition-all" data-reveal="right">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-400 flex items-center justify-center font-black shrink-0 shadow-lg shadow-pink-600/30">5</div>
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-widest text-pink-400">Truyện</span>
+            <h3 class="text-2xl font-bold mt-1 mb-3">Comic</h3>
+            <ol class="space-y-2 text-slate-300 text-sm">
+              <li class="flex gap-2"><span class="text-pink-400">①</span> Chuyển chế độ <b>Story</b> (tự tạo kịch bản) hoặc <b>Manual</b> (nhập tay).</li>
+              <li class="flex gap-2"><span class="text-pink-400">②</span> Nhập cốt truyện / danh sách khung.</li>
+              <li class="flex gap-2"><span class="text-pink-400">③</span> Bấm <b>Tạo Tất Cả</b> — toàn bộ khung truyện được sinh cùng lúc.</li>
+            </ol>
+            <div class="mt-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
+              💡 Chọn tỉ lệ khung LANDSCAPE / PORTRAIT trước khi tạo để khớp định dạng đăng bài.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div id="step-6" class="glass rounded-3xl p-8 relative card-glow transition-all" data-reveal="right">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-400 flex items-center justify-center font-black shrink-0 shadow-lg shadow-amber-600/30">6</div>
+          <div class="flex-1">
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">Xuất bản</span>
+            <h3 class="text-2xl font-bold mt-1 mb-3">Ghép & Xuất</h3>
+            <ol class="space-y-2 text-slate-300 text-sm">
+              <li class="flex gap-2"><span class="text-amber-400">①</span> Vào tab <b>Ghép video</b>, tích chọn các video muốn hợp nhất.</li>
+              <li class="flex gap-2"><span class="text-amber-400">②</span> Bấm <b>Merge</b> — chờ ghép xong, tải file kết quả.</li>
+              <li class="flex gap-2"><span class="text-amber-400">③</span> Tải từng video thành phẩm qua nút <b>Download</b> ở mỗi thẻ.</li>
+            </ol>
+            <div class="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+              💡 Trong tab Settings: đổi ngôn ngữ VI/EN, quản lý cookie, xóa lịch sử hàng loạt.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== TIPS ====== -->
+<section id="meo" class="px-6 py-20">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-14" data-reveal>
+      <span class="text-xs font-bold uppercase tracking-widest text-emerald-400">Pro tips</span>
+      <h2 class="text-4xl md:text-5xl font-black mt-3">Mẹo chuyên sâu</h2>
+    </div>
+    <div class="grid md:grid-cols-2 gap-5">
+      <div class="glass rounded-2xl p-6 card-glow transition-all" data-reveal>
+        <div class="text-3xl mb-3">🚀</div>
+        <h3 class="font-bold text-lg mb-2">Prompt càng chi tiết, kết quả càng tốt</h3>
+        <p class="text-sm text-slate-400">Thêm ánh sáng, góc máy, phong cách, bối cảnh. Mỗi dòng prompt = một sản phẩm riêng biệt.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 card-glow transition-all" data-reveal style="transition-delay:.05s">
+        <div class="text-3xl mb-3">🔄</div>
+        <h3 class="font-bold text-lg mb-2">Dùng Run Unfinished sau khi mất mạng</h3>
+        <p class="text-sm text-slate-400">Không cần tạo lại từ đầu — ứng dụng chỉ tiếp tục những phần chưa hoàn thành.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 card-glow transition-all" data-reveal>
+        <div class="text-3xl mb-3">⚡</div>
+        <h3 class="font-bold text-lg mb-2">Retry thông minh</h3>
+        <p class="text-sm text-slate-400">Nút Retry (n) chỉ thử lại phần lỗi, giữ nguyên kết quả thành công — tiết kiệm credit.</p>
+      </div>
+      <div class="glass rounded-2xl p-6 card-glow transition-all" data-reveal style="transition-delay:.05s">
+        <div class="text-3xl mb-3">🔒</div>
+        <h3 class="font-bold text-lg mb-2">Cookie Manager</h3>
+        <p class="text-sm text-slate-400">Xuất/nhập cookie để đồng bộ phiên đăng nhập giữa các máy. Xóa hàng loạt khi hết hạn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA ====== -->
+<section class="px-6 py-20">
+  <div class="max-w-4xl mx-auto glass rounded-3xl p-12 text-center relative overflow-hidden" data-reveal>
+    <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-violet-600/25 blur-[80px]"></div>
+    <div class="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-blue-600/25 blur-[80px]"></div>
+    <div class="relative">
+      <h2 class="text-3xl md:text-4xl font-black mb-4">Sẵn sàng sáng tạo chưa?</h2>
+      <p class="text-slate-400 mb-8">Mở ứng dụng và bắt đầu với tab Tạo Ảnh Pro — mọi tính năng đều 1-click.</p>
+      <a href="#bat-dau" class="inline-block px-10 py-4 rounded-2xl font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-xl shadow-blue-600/40 hover:scale-105 hover:shadow-purple-600/50 active:scale-95 transition-all">
+        ↑ Lên đầu trang
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+<script>
+  // progress bar
+  const bar = document.getElementById('progress');
+  addEventListener('scroll', () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+  }, { passive: true });
+
+  // scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+
+  // sidebar active state
+  const links = document.querySelectorAll('.step-link');
+  const secs = [...document.querySelectorAll('#huong-dan [id^="step-"]')];
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active-nav', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  secs.forEach(s => io2.observe(s));
+
+  // smooth anchor offset
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (ev) => {
+      const id = a.getAttribute('href');
+      if (id.length > 1) {
+        const t = document.querySelector(id);
+        if (t) { ev.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      }
+    });
+  });
+
+  // ===== Prompt mẫu từ prompts =====
+  const PROMPTS = [
+    { title: "Realistic Amateur Phone Photo with WhatsApp Chat", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1778778332629-g2mvex.jpg", desc: "Ảnh nghiệp dư chụp màn hình WhatsApp trên điện thoại thật — mờ, lóa, nghiêng tự nhiên.", content: "Create a realistic, poorly taken amateur photo of a physical smartphone showing a WhatsApp chat on its screen. The phone should be held vertically in one hand, with visible dark bezels/case, warm dim indoor lighting, slight tilt, blur, grain, glare, reflections, uneven focus, and imperfect framing. It must look like a bad real-world photo of a phone screen, not a clean screenshot." },
+    { title: "Photorealistic 4K Reference Image Enhancement", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1777901292397-p3m4ev.jpg", desc: "Nâng cấp ảnh tham chiếu lên 4K tuyệt đối trung thực — giữ nguyên danh tính, biểu cảm, bố cục.", content: "Ultra-high-resolution 4K enhancement based strictly on the provided reference image. Absolute fidelity to original facial anatomy, proportions, and identity. Preserve expression, gaze, pose, camera angle, framing, and perspective with zero deviation. Clothing, hair, skin, and background elements must remain unchanged in structure, placement, and design." },
+    { title: "Rooftop Lifestyle Portrait Prompt", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1777122097043-47a9ur.jpg", desc: "Chân dung lifestyle tự nhiên trên sân thượng đầy nắng — kiến trúc Địa Trung Hải.", content: "A rooftop terrace during daytime with urban residential buildings in the background. Outdoor terrace in a city with Mediterranean/European style architecture. Strong natural sunlight casting sharp shadows. Casual, sunny, relaxed daytime vibe. Candid lifestyle moment, moderate depth of field, subject in focus." },
+    { title: "Dramatic Horse Silhouette in Cinematic Lighting", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1776240996550-5844cy.jpg", desc: "Bóng ngựa hùng vĩ trong khói màu, ánh sáng vàng-lạnh tương phản cao, phong cách điện ảnh.", content: "A dramatic silhouette of a powerful horse moving through dense, colorful smoke, illuminated by contrasting warm yellow and cool blue light against a dark background. Warm color temperature, high contrast, dominant palette: black, golden yellow, teal, dark brown. Wide shot, medium depth of field, 1:1 square format." },
+    { title: "Cinematic Sunset Boat Scene", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1776241268687-npc18f.jpg", desc: "Thuyền truyền thống trên hồ lúc hoàng hôn, núi mờ xa, chim bay — yên bình và đầy chất thơ.", content: "A lone person wearing a conical hat sits in a traditional wooden boat on a calm lake at sunrise or sunset, surrounded by birds, with hazy mountains in the background. Serene lake with calm, reflective water. Golden mist atmosphere, backlighting, peaceful and contemplative solitude." },
+    { title: "Photorealistic Selfie Portrait Description", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1766839111146-ff4fdk.jpg", desc: "Chân dung selfie chân thực — da sáng ấm, cân bằng trắng tungsten nhẹ, tỉ lệ 3:4.", content: "Photorealistic selfie portrait of a young female subject. Fair to light tan skin tone with warm undertones. Slightly warm indoor tungsten white balance, natural saturation with slightly vibrant lips and eyes, medium contrast. 3:4 aspect ratio, high resolution, sharp details, slight digital noise of phone camera sensors in indoor light." },
+    { title: "American Comic", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1769769142920-sjx7zt.jpg", desc: "Truyện tranh Mỹ bom tấn — góc máy cực mạnh, mưa gió sấm chớp, hành động vượt vật lý.", content: "American comic style, blockbuster action page. Extreme low angles for power, high angles for scale, aggressive foreshortening, dutch angles for tension. Bodies reacting realistically to impossible forces. Rain in diagonal streaks with splashes and wet reflections, lightning illuminating scenes dramatically, wind showing direction and force." },
+    { title: "The Digital Frontier: Pixelated Pioneers", img: "https://prompts-chat-space.fra1.digitaloceanspaces.com/prompt-media/prompt-media-1766432730227-6m43pv.jpg", desc: "Voxel art — hòn đảo số lơ lửng trong vũ trụ tím, hai nhà thám hiểm khám phá.", content: "High-angle isometric view of a suspended digital island, emphasizing isolation and blocky aesthetics, 1:1 cinematic aspect ratio. Voxel art genre. Saturated primary colors, vibrant greens and blues for the island, deep purples and blacks for the void, pixelated orange accents. Emissive light from the voxels, wonder, curiosity, discovery." }
+  ];
+
+  const grid = document.getElementById('prompt-grid');
+  PROMPTS.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'glass rounded-2xl overflow-hidden card-glow transition-all group';
+    card.setAttribute('data-reveal', '');
+    card.style.transitionDelay = (i % 4) * 0.05 + 's';
+    card.innerHTML = `
+      <div class="relative aspect-video overflow-hidden">
+        <img src="${p.img}" alt="${p.title}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a12]/80 via-transparent to-transparent"></div>
+        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/50 backdrop-blur text-[10px] text-cyan-300 border border-cyan-400/20">prompts</span>
+      </div>
+      <div class="p-5">
+        <h3 class="font-bold text-sm mb-2 line-clamp-2 leading-snug">${p.title}</h3>
+        <p class="text-xs text-slate-400 mb-4 line-clamp-2">${p.desc}</p>
+        <button onclick="copyPrompt(${i})" class="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md shadow-blue-600/25 hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-95 transition-all">📋 Sao chép prompt</button>
+      </div>`;
+    grid.appendChild(card);
+    io.observe(card);
+  });
+
+  window.copyPrompt = (i) => {
+    const btn = event.target;
+    navigator.clipboard.writeText(PROMPTS[i].content).then(() => {
+      const old = btn.textContent;
+      btn.textContent = '✅ Đã sao chép!';
+      btn.classList.add('from-emerald-600', 'to-teal-600');
+      setTimeout(() => { btn.textContent = old; btn.classList.remove('from-emerald-600', 'to-teal-600'); }, 1600);
+    });
+  };
+</script>
+
+</body>
+</html>
